@@ -22,7 +22,7 @@ IMS Pro is a full‑stack inventory management application that supports multi�
   - Stock transactions recorded in `stock_transaction` (IN, OUT, ADJUSTMENT, TRANSFER)
   - Purchase order workflow: create → approve → receive (partial receives supported)
   - Audit logging for create/update/delete across important tables
-  - Dashboard and low-stock alerting
+  - Dashboard and Low-Stock alerting
 
 - **User Roles:**
   - Admin: full permissions, manage data and view all audit logs
@@ -58,7 +58,7 @@ IMS Pro is a full‑stack inventory management application that supports multi�
   - **Fetch (low stock list):**
     - Client: `GET /api/v1/stock/alerts/low-stock`
     - Server: `stockRepo.findLowStock()` raw query returns aggregated view
-    - Client: display low-stock tab
+    - Client: display Low-Stock tab
 
 ## 4. Database Design
 
