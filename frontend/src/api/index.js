@@ -117,6 +117,11 @@ export const reportAPI = {
   getStockMovement:  (params) => api.get('/reports/stock-movement', { params }),
   getPOSummary:      (params) => api.get('/reports/purchase-orders', { params }),
   getSalesSummary:   (params) => api.get('/reports/sales-summary', { params }),
+  downloadStockValuationPDF: () => api.get('/reports/stock-valuation/pdf', { responseType: 'blob' }),
+  downloadLowStockPDF:       () => api.get('/reports/low-stock/pdf', { responseType: 'blob' }),
+  downloadStockMovementPDF:  (params) => api.get('/reports/stock-movement/pdf', { params, responseType: 'blob' }),
+  downloadPOSummaryPDF:      (params) => api.get('/reports/purchase-orders/pdf', { params, responseType: 'blob' }),
+  downloadSalesSummaryPDF:   (params) => api.get('/reports/sales-summary/pdf', { params, responseType: 'blob' }),
 };
 
 // ── Audit Logs ───────────────────────────────────────────────────────────────

@@ -3,7 +3,7 @@ import { reportAPI } from '../../api';
 import { Card, CardHeader, Button, Badge, PageLoader, Alert, Table } from '../../components/ui';
 import { formatCurrency, statusColor } from '../../utils/helpers';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Download, RefreshCw } from 'lucide-react';
+import { Download, RefreshCw, FileDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const REPORTS = ['Valuation', 'Low Stock', 'Stock Movement', 'PO Summary', 'Sales Summary'];
@@ -14,6 +14,30 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState({});
   const [from,    setFrom]    = useState('');
   const [to,      setTo]      = useState('');
+
+  const downloadPDF = async () => {
+    try {
+      let blob;
+      if (tab === 'Valuation')      blob = (await reportAPI.downloadStockValuationPDF()).data;
+      else if (tab === 'Low Stock') blob = (await reportAPI.downloadLowStockPDF()).data;
+      else if (tab === 'Stock Movement') blob = (await reportAPI.downloadStockMovementPDF({ from, to })).data;
+      else if (tab === 'PO Summary')     blob = (await reportAPI.downloadPOSummaryPDF({ from, to })).data;
+      else if (tab === 'Sales Summary')  blob = (await reportAPI.downloadSalesSummaryPDF({ from, to })).data;
+      
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const now = new Date().toISOString().split('T')[0];
+      a.download = `${tab.toLowerCase().replace(/ /g, '-')}-${now}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success('PDF downloaded successfully');
+    } catch (e) {
+      toast.error(e.response?.data?.message || 'Failed to download PDF');
+    }
+  };
 
   const load = async (report = tab) => {
     setLoading(l => ({ ...l, [report]: true }));
@@ -103,6 +127,14 @@ export default function ReportsPage() {
         ))}
       </div>
 
+      {/* Download button */}
+      {current && !isLoading && (
+        <div className="flex justify-end">
+          <Button icon={FileDown} onClick={downloadPDF} variant="outline">
+            Download PDF
+          </Button>
+        </div>
+      )}
       {/* Date range picker for time-based reports */}
       {['Stock Movement','PO Summary','Sales Summary'].includes(tab) && (
         <Card>
