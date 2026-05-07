@@ -1,0 +1,41 @@
+# Node
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+/backend/logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Build outputs
+dist/
+build/
+frontend/build/
+
+# Coverage
+coverage/
+
+# Database
+*.sqlite
+*.db
+
+# Mac
+*.swp
+
+# Others
+*.tgz
