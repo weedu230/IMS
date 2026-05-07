@@ -1,4 +1,6 @@
 # IMS Pro — Inventory Management System
+[DBMS-Project-Report-Template-06052026-120106pm.docx](https://github.com/user-attachments/files/27491024/DBMS-Project-Report-Template-06052026-120106pm.docx)
+
 
 IMS Pro is a full‑stack inventory management application that supports multi‑warehouse stock tracking, purchase order lifecycle, role‑based access, audit logging and reporting.
 
@@ -16,6 +18,19 @@ IMS Pro is a full‑stack inventory management application that supports multi�
 - Low‑stock alerts and dashboard KPIs
 - Audit logs for important create/update/delete actions
 - Employee management & admin password reset
+
+## SS 
+
+
+https://github.com/user-attachments/assets/9c82b46e-a6b1-4445-9aea-4e702b562c51
+
+<img width="1366" height="768" alt="Screenshot 2026-05-07 221140" src="https://github.com/user-attachments/assets/fe23badd-b117-4bef-b968-bdd4ac96a4a1" />
+<img width="1366" height="768" alt="Screenshot 2026-05-07 221123" src="https://github.com/user-attachments/assets/c349aa9b-14bd-4a43-8a27-6c7ba7ec93b7" />
+<img width="1366" height="768" alt="Screenshot 2026-05-07 221101" src="https://github.com/user-attachments/assets/d36c81d7-7367-47f1-a468-2a01d55d4fa3" />
+<img width="1366" height="768" alt="Screenshot 2026-05-07 221002" src="https://github.com/user-attachments/assets/967aac0b-806f-41e8-9cee-a04d7723a5aa" />
+<img width="1366" height="768" alt="Screenshot 2026-05-07 220942" src="https://github.com/user-attachments/assets/59988a47-7db2-442d-bd03-147ae51a3326" />
+<img width="326" height="316" alt="a" src="https://github.com/user-attachments/assets/3ceaaa84-7e46-45aa-9167-d15481e07fd7" />
+
 
 ## Tech Stack
 
