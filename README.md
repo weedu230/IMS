@@ -194,7 +194,7 @@ sequenceDiagram
 
 - **Functionalities Developed:**
   - Product CRUD and validation
-  - Stock aggregation and low-stock detection
+  - Stock aggregation and Low-Stock detection
   - Purchase order lifecycle with partial receives
   - ACID stock movement stored procedure (`RecordStockMovement`)
   - Audit logging for critical table changes
