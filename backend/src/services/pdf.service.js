@@ -2,6 +2,13 @@ const PDFDocument = require('pdfkit');
 const reportService = require('./report.service');
 
 class PDFService {
+  static _normalizeRows(result) {
+    if (Array.isArray(result)) return result;
+    if (Array.isArray(result?.rows)) return result.rows;
+    if (Array.isArray(result?.data)) return result.data;
+    return [];
+  }
+
   /**
    * Generate PDF for Stock Valuation Report
    */
@@ -16,10 +23,12 @@ class PDFService {
 
     // Get data
     const data = await reportService.getStockValuation();
+    const rows = PDFService._normalizeRows(data);
+    const grandTotal = Number(data?.grand_total ?? 0);
 
     // Summary
     doc.fontSize(12).fillColor('#000').font('Helvetica-Bold').text('Total Inventory Value');
-    doc.fontSize(16).font('Helvetica-Bold').fillColor('#6366f1').text(`PKR ${parseFloat(data.data.grand_total).toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+    doc.fontSize(16).font('Helvetica-Bold').fillColor('#6366f1').text(`PKR ${grandTotal.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
     doc.moveDown();
 
     // Table headers
@@ -39,7 +48,6 @@ class PDFService {
 
     // Table rows
     doc.font('Helvetica').fontSize(9).fillColor('#333');
-    const rows = data.data.rows || [];
     rows.forEach((row) => {
       const y = doc.y;
       if (y > 700) {
@@ -72,7 +80,7 @@ class PDFService {
 
     // Get data
     const data = await reportService.getLowStockReport();
-    const items = data.data || [];
+    const items = PDFService._normalizeRows(data);
 
     doc.fontSize(11).fillColor('#d32f2f').font('Helvetica-Bold').text(`⚠️  ${items.length} product(s) below reorder level`);
     doc.moveDown();
@@ -126,7 +134,7 @@ class PDFService {
 
     // Get data
     const data = await reportService.getStockMovement(query);
-    const items = data.data || [];
+    const items = PDFService._normalizeRows(data);
 
     doc.fontSize(11).fillColor('#000').font('Helvetica-Bold').text(`Total Records: ${items.length}`);
     doc.moveDown();
@@ -181,7 +189,7 @@ class PDFService {
 
     // Get data
     const data = await reportService.getPurchaseOrderSummary(query);
-    const items = data.data || [];
+    const items = PDFService._normalizeRows(data);
 
     doc.fontSize(11).fillColor('#000').font('Helvetica-Bold').text(`Total Suppliers: ${items.length}`);
     doc.moveDown();
@@ -234,7 +242,7 @@ class PDFService {
 
     // Get data
     const data = await reportService.getSalesSummary(query);
-    const items = data.data || [];
+    const items = PDFService._normalizeRows(data);
 
     doc.fontSize(11).fillColor('#000').font('Helvetica-Bold').text(`Total Customers: ${items.length}`);
     doc.moveDown();
