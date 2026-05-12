@@ -129,6 +129,11 @@ export const auditAPI = {
   getAll: (params) => api.get('/audit-logs', { params }),
 };
 
+// ── Architecture / Reverse Engineering ──────────────────────────────────────
+export const architectureAPI = {
+  getUml: (type = 'all') => api.get('/architecture/uml', { params: { type } }),
+};
+
 // ── Employees ─────────────────────────────────────────────────────────────────
 export const employeeAPI = {
   getAll:     (params) => api.get('/employees', { params }),

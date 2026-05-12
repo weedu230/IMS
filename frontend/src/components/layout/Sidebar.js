@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard, Package, Tags, Truck, Warehouse,
   BarChart3, ShoppingCart, ClipboardList, Users,
-  LogOut, Menu, X, TrendingUp, ChevronRight, History,
+  LogOut, Menu, X, TrendingUp, ChevronRight, History, GitBranch,
 } from 'lucide-react';
 
 const NAV = [
@@ -17,6 +17,7 @@ const NAV = [
   { to: '/purchase-orders',  label: 'Purchase Orders',  icon: ClipboardList,   roles: ['admin','manager','staff'] },
   { to: '/orders',           label: 'Sales Orders',     icon: ShoppingCart,    roles: ['admin','manager','staff'] },
   { to: '/reports',          label: 'Reports',          icon: TrendingUp,      roles: ['admin','manager','viewer'] },
+  { to: '/architecture-uml', label: 'Reverse UML',      icon: GitBranch,       roles: ['admin','manager'] },
   { to: '/audit-logs',       label: 'Audit Logs',       icon: History,         roles: ['admin'] },
   { to: '/employees',        label: 'Employees',        icon: Users,           roles: ['admin'] },
 ];

@@ -3,6 +3,7 @@ require('dotenv').config();
 const app                    = require('./app');
 const { connectDB }          = require('./config/database');
 const { startScheduler }     = require('./utils/scheduler');
+const { registerDomainEventListeners } = require('./utils/registerDomainEventListeners');
 const logger                 = require('./utils/logger');
 
 const PORT = parseInt(process.env.PORT, 10) || 5000;
@@ -15,7 +16,10 @@ const startServer = async () => {
     // 2. Start the reorder scheduler (nightly cron)
     startScheduler();
 
-    // 3. Start HTTP server
+    // 3. Register observer hooks for domain events
+    registerDomainEventListeners();
+
+    // 4. Start HTTP server
     const server = app.listen(PORT, () => {
       logger.info(`🚀  IMS Backend running on http://localhost:${PORT}`);
       logger.info(`📋  Environment : ${process.env.NODE_ENV}`);

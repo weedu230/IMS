@@ -17,6 +17,7 @@ import OrdersPage         from './pages/orders/OrdersPage';
 import ReportsPage        from './pages/reports/ReportsPage';
 import EmployeesPage      from './pages/employees/EmployeesPage';
 import AuditLogsPage      from './pages/admin/AuditLogsPage';
+import ArchitectureUMLPage from './pages/admin/ArchitectureUMLPage';
 
 const Protected = ({ children, roles }) => (
   <ProtectedRoute roles={roles}>
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/orders"          element={<Protected><OrdersPage /></Protected>} />
           <Route path="/reports"         element={<Protected roles={['admin','manager','viewer']}><ReportsPage /></Protected>} />
           <Route path="/audit-logs"       element={<Protected roles={['admin']}><AuditLogsPage /></Protected>} />
+          <Route path="/architecture-uml" element={<Protected roles={['admin','manager']}><ArchitectureUMLPage /></Protected>} />
           <Route path="/employees"       element={<Protected roles={['admin']}><EmployeesPage /></Protected>} />
           <Route path="*"                element={<Navigate to="/dashboard" replace />} />
         </Routes>

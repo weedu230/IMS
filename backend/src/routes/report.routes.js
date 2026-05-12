@@ -12,7 +12,7 @@ const wrap = (fn) => async (req, res, next) => {
 };
 
 router.get('/dashboard',       authenticate, wrap(() => reportService.getDashboard()));
-router.get('/stock-valuation', authenticate, wrap(() => reportService.getStockValuation()));
+router.get('/stock-valuation', authenticate, wrap((q) => reportService.getStockValuation(q)));
 router.get('/low-stock',       authenticate, wrap(() => reportService.getLowStockReport()));
 router.get('/stock-movement',  authenticate, wrap((q) => reportService.getStockMovement(q)));
 router.get('/purchase-orders', authenticate, wrap((q) => reportService.getPurchaseOrderSummary(q)));

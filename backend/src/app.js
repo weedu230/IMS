@@ -22,6 +22,8 @@ const orderRoutes      = require('./routes/customerOrder.routes');
 const reportRoutes     = require('./routes/report.routes');
 const employeeRoutes   = require('./routes/employee.routes');
 const auditRoutes      = require('./routes/audit.routes');
+const architectureRoutes = require('./routes/architecture.routes');
+const inventoryRoutes  = require('./routes/inventory.routes');
 
 const app = express();
 
@@ -94,6 +96,8 @@ app.use(`${API}/orders`,          orderRoutes);
 app.use(`${API}/reports`,         reportRoutes);
 app.use(`${API}/employees`,       employeeRoutes);
 app.use(`${API}/audit-logs`,      auditRoutes);
+app.use(`${API}/architecture`,    architectureRoutes);
+app.use(`${API}/inventory`,       inventoryRoutes);
 
 // ─── 404 handler ──────────────────────────────────────────────────────────────
 app.use((req, res) => {

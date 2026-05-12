@@ -18,6 +18,16 @@ router.get('/sku/:sku', authenticate, async (req, res, next) => {
     return sendSuccess(res, product);
   } catch (err) { next(err); }
 });
+router.post('/import/preview', authenticate, authorize(...RW), async (req, res, next) => {
+  try {
+    return sendSuccess(res, await productService.previewImport(req.body.rows || []));
+  } catch (err) { next(err); }
+});
+router.post('/import', authenticate, authorize(...RW), async (req, res, next) => {
+  try {
+    return sendSuccess(res, await productService.importRows(req.body.rows || [], req.user?.emp_id), 'Products imported successfully');
+  } catch (err) { next(err); }
+});
 router.get('/:id', authenticate, ctrl.getById);
 router.post('/',   authenticate, authorize(...RW),
   [

@@ -4,6 +4,7 @@ const { AppError } = require('../middleware/errorHandler');
 const { PO_STATUS, TXN_TYPE } = require('../utils/constants');
 const { POItem }   = require('../models');
 const { sequelize } = require('../config/database');
+const { domainEvents, DOMAIN_EVENTS } = require('../utils/domainEvents');
 
 class PurchaseOrderService {
 
@@ -32,6 +33,11 @@ class PurchaseOrderService {
     const po = await poRepo.createWithItems(poData, data.items);
     await poRepo.audit({ table_name: 'purchase_order', record_id: po.po_id,
       action: 'INSERT', new_values: po.toJSON(), changed_by: empId });
+    domainEvents.emit(DOMAIN_EVENTS.PURCHASE_ORDER_CREATED, {
+      po_id: po.po_id,
+      supplier_id: po.supplier_id,
+      created_by: empId,
+    });
     return poRepo.findByIdFull(po.po_id);
   }
 
@@ -57,6 +63,11 @@ class PurchaseOrderService {
     await poRepo.audit({ table_name: 'purchase_order', record_id: id,
       action: 'UPDATE', old_values: { status: po.status },
       new_values: { status: PO_STATUS.APPROVED }, changed_by: empId });
+    domainEvents.emit(DOMAIN_EVENTS.PURCHASE_ORDER_STATUS_CHANGED, {
+      po_id: id,
+      status: PO_STATUS.APPROVED,
+      changed_by: empId,
+    });
     return poRepo.findByIdFull(id);
   }
 
@@ -69,6 +80,11 @@ class PurchaseOrderService {
       throw new AppError(`Cannot cancel a PO with status: ${po.status}`, 400);
     }
     await poRepo.updateStatus(id, PO_STATUS.CANCELLED);
+    domainEvents.emit(DOMAIN_EVENTS.PURCHASE_ORDER_STATUS_CHANGED, {
+      po_id: id,
+      status: PO_STATUS.CANCELLED,
+      changed_by: empId,
+    });
     return poRepo.findByIdFull(id);
   }
 

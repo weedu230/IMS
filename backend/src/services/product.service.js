@@ -1,6 +1,7 @@
 const productRepo        = require('../repositories/product.repository');
 const { AppError }       = require('../middleware/errorHandler');
 const { ProductSupplier } = require('../models');
+const { adaptProductImportRows } = require('../utils/productImport.adapter');
 
 class ProductService {
 
@@ -67,6 +68,52 @@ class ProductService {
       action:'UPDATE', old_values: { is_active: true }, new_values: { is_active: false },
       changed_by: empId });
     return { message: 'Product deactivated' };
+  }
+
+  async previewImport(rows) {
+    const adaptedRows = adaptProductImportRows(rows);
+    const validation = adaptedRows.map((row, index) => ({
+      row: index + 1,
+      valid: !!(row.name && row.sku),
+      missing: [
+        !row.name ? 'name' : null,
+        !row.sku ? 'sku' : null,
+      ].filter(Boolean),
+    }));
+
+    return { rows: adaptedRows, validation };
+  }
+
+  async importRows(rows, empId) {
+    const adaptedRows = adaptProductImportRows(rows);
+    const results = [];
+
+    for (const row of adaptedRows) {
+      if (!row.name || !row.sku) {
+        results.push({ sku: row.sku || null, status: 'skipped', reason: 'Missing name or sku' });
+        continue;
+      }
+
+      const existing = await productRepo.findBySku(row.sku);
+      if (existing) {
+        results.push({ sku: row.sku, status: 'skipped', reason: 'SKU already exists' });
+        continue;
+      }
+
+      const created = await this.create({
+        name: row.name,
+        sku: row.sku,
+        unit_price: row.unit_price,
+        category_id: row.category_id,
+        reorder_level: row.reorder_level,
+        reorder_qty: row.reorder_qty,
+        is_active: row.is_active,
+      }, empId);
+
+      results.push({ sku: row.sku, status: 'created', product_id: created.product_id });
+    }
+
+    return { total: adaptedRows.length, results };
   }
 }
 

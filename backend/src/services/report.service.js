@@ -1,5 +1,7 @@
 const { sequelize } = require('../config/database');
 const { AppError }  = require('../middleware/errorHandler');
+const { getStockValuationStrategy, listStockValuationStrategies } = require('./stockValuation.strategy');
+const ReportQueryBuilder = require('../utils/reportQuery.builder');
 
 class ReportService {
 
@@ -7,26 +9,17 @@ class ReportService {
    * GET /reports/stock-valuation
    * Current inventory value = qty_on_hand × unit_price per product
    */
-  async getStockValuation() {
-    const [rows] = await sequelize.query(`
-      SELECT
-        p.product_id,
-        p.sku,
-        p.name,
-        c.category_name,
-        p.unit_price,
-        COALESCE(SUM(s.qty_on_hand), 0)                        AS total_qty,
-        COALESCE(SUM(s.qty_on_hand), 0) * p.unit_price          AS total_value
-      FROM   product p
-      LEFT   JOIN category c ON p.category_id = c.category_id
-      LEFT   JOIN stock    s ON p.product_id  = s.product_id
-      WHERE  p.is_active = 1
-      GROUP  BY p.product_id, p.sku, p.name, c.category_name, p.unit_price
-      ORDER  BY total_value DESC
-    `);
+  async getStockValuation({ method = 'current' } = {}) {
+    const strategy = getStockValuationStrategy(method);
+    const rows = await strategy.execute();
 
     const grandTotal = rows.reduce((sum, r) => sum + parseFloat(r.total_value || 0), 0);
-    return { rows, grand_total: grandTotal.toFixed(2) };
+    return {
+      method: strategy.name,
+      available_methods: listStockValuationStrategies(),
+      rows,
+      grand_total: grandTotal.toFixed(2),
+    };
   }
 
   /**
@@ -36,10 +29,14 @@ class ReportService {
   async getStockMovement({ from, to, product_id, warehouse_id }) {
     if (!from || !to) throw new AppError('from and to date params are required', 400);
 
-    const params = [from, to];
-    let filter = '';
-    if (product_id)   { filter += ' AND st.product_id = ?';   params.push(product_id); }
-    if (warehouse_id) { filter += ' AND st.warehouse_id = ?'; params.push(warehouse_id); }
+    const builder = new ReportQueryBuilder()
+      .dateRange('st.txn_date', from, to)
+      .equals('st.product_id', product_id)
+      .equals('st.warehouse_id', warehouse_id)
+      .group('st.txn_type, p.product_id, p.sku, p.name, w.warehouse_id, w.warehouse_name, DATE(st.txn_date)')
+      .order('txn_day DESC, p.name');
+
+    const { clause: filter, params } = builder.buildWhere();
 
     const [rows] = await sequelize.query(`
       SELECT
@@ -53,7 +50,6 @@ class ReportService {
       FROM   stock_transaction st
       JOIN   product   p ON st.product_id   = p.product_id
       JOIN   warehouse w ON st.warehouse_id = w.warehouse_id
-      WHERE  st.txn_date BETWEEN ? AND ?
       ${filter}
       GROUP  BY st.txn_type, p.product_id, p.sku, p.name, w.warehouse_id, w.warehouse_name, DATE(st.txn_date)
       ORDER  BY txn_day DESC, p.name
