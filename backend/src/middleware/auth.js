@@ -4,9 +4,9 @@ require('dotenv').config();
 
 const verifyToken = (token) => jwt.verify(token, process.env.JWT_SECRET);
 
-const authenticateWithToken = (token, req, next) => {
+const authenticateWithToken = (token, req, res, next) => {
   if (!token) {
-    return sendUnauthorized(req.res, 'No token provided. Authorization header must be: Bearer <token>');
+    return sendUnauthorized(res, 'No token provided. Authorization header must be: Bearer <token>');
   }
 
   try {
@@ -30,7 +30,7 @@ const authenticate = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
-  return authenticateWithToken(token, req, next);
+  return authenticateWithToken(token, req, res, next);
 };
 
 const authenticateStream = (req, res, next) => {
@@ -43,7 +43,7 @@ const authenticateStream = (req, res, next) => {
     return sendUnauthorized(res, 'No token provided.');
   }
 
-  return authenticateWithToken(token, req, next);
+  return authenticateWithToken(token, req, res, next);
 };
 
 /**
@@ -72,4 +72,4 @@ const authorize = (...allowedRoles) => {
   };
 };
 
-module.exports = { authenticate, authorize };
+module.exports = { authenticate, authenticateStream, authorize };

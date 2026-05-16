@@ -15,6 +15,11 @@ const Stock = sequelize.define('Stock', {
     type:      DataTypes.INTEGER,
     allowNull: false,
   },
+  bin_location: {
+    type:         DataTypes.STRING(100),
+    allowNull:    false,
+    defaultValue: 'MAIN',
+  },
   qty_on_hand: {
     type:         DataTypes.INTEGER,
     allowNull:    false,

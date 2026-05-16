@@ -16,6 +16,11 @@ const StockTransaction = sequelize.define('StockTransaction', {
     type:      DataTypes.INTEGER,
     allowNull: false,
   },
+  bin_location: {
+    type:         DataTypes.STRING(100),
+    allowNull:    false,
+    defaultValue: 'MAIN',
+  },
   txn_type: {
     type:      DataTypes.ENUM(...Object.values(TXN_TYPE)),
     allowNull: false,
@@ -41,6 +46,14 @@ const StockTransaction = sequelize.define('StockTransaction', {
   },
   created_by: {
     type:      DataTypes.INTEGER,
+    allowNull: true,
+  },
+  batch_no: {
+    type:      DataTypes.STRING(100),
+    allowNull: true,
+  },
+  serial_no: {
+    type:      DataTypes.STRING(100),
     allowNull: true,
   },
 }, {

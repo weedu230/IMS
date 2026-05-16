@@ -43,6 +43,27 @@ export default function StockPage() {
 
   useEffect(() => { loadTab(); }, [tab, page, q]);
 
+  useEffect(() => {
+    const token = localStorage.getItem('ims_token');
+    if (!token) return undefined;
+
+    const base = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
+    const stream = new EventSource(`${base}/stock/stream?token=${encodeURIComponent(token)}`);
+
+    const refresh = () => loadTab();
+
+    stream.addEventListener('stock-update', refresh);
+    stream.addEventListener('ready', () => {});
+    stream.addEventListener('heartbeat', () => {});
+    stream.onerror = () => {
+      stream.close();
+    };
+
+    return () => {
+      stream.close();
+    };
+  }, [tab, page, q]);
+
   const loadTab = async () => {
     setLoading(true);
     try {
@@ -85,6 +106,7 @@ export default function StockPage() {
   const levelCols = [
     { key: 'sku',    label: 'SKU',     render: r => <span className="font-mono text-xs bg-gray-100 px-2 py-0.5 rounded">{r.sku}</span> },
     { key: 'name',   label: 'Product', render: r => <span className="font-medium">{r.name}</span> },
+    { key: 'bin_location', label: 'Bin', render: r => <Badge className="bg-slate-100 text-slate-700">{r.bin_location || 'MAIN'}</Badge> },
     { key: 'category', label: 'Category', render: r => r.category?.category_name || '—' },
     { key: 'total_stock', label: 'Total Stock', render: r => (
       <span className={`font-bold ${Number(r.total_stock) <= r.reorder_level ? 'text-red-600' : 'text-gray-900'}`}>
@@ -102,9 +124,11 @@ export default function StockPage() {
     { key: 'txn_id',       label: '#' },
     { key: 'product',      label: 'Product',   render: r => r.product?.name || '—' },
     { key: 'warehouse',    label: 'Warehouse', render: r => r.warehouse?.warehouse_name || '—' },
+    { key: 'bin_location', label: 'Bin', render: r => r.bin_location || 'MAIN' },
     { key: 'txn_type',     label: 'Type',      render: r => <Badge className={statusColor(r.txn_type)}>{r.txn_type}</Badge> },
     { key: 'quantity',     label: 'Qty',       render: r => <span className="font-mono font-bold">{r.quantity}</span> },
     { key: 'txn_date',     label: 'Date',      render: r => formatDateTime(r.txn_date) },
+    { key: 'trace',        label: 'Trace',      render: r => `${r.batch_no || '—'}${r.serial_no ? ` / ${r.serial_no}` : ''}` },
     { key: 'notes',        label: 'Notes',     render: r => <span className="text-gray-500 text-xs">{r.notes || '—'}</span> },
   ];
 

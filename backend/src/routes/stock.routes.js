@@ -2,14 +2,36 @@ const express      = require('express');
 const { body }     = require('express-validator');
 const router       = express.Router();
 const StockController = require('../controllers/stock.controller');
-const { authenticate, authorize } = require('../middleware/auth');
+const { authenticate, authenticateStream, authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { ROLES, TXN_TYPE } = require('../utils/constants');
+const { registerStockStreamClient, unregisterStockStreamClient } = require('../utils/stockStreamHub');
 
 const RW = [ROLES.ADMIN, ROLES.MANAGER, ROLES.STAFF];
 
 // GET /api/v1/stock                         — all products with totals
 router.get('/', authenticate, StockController.getAllLevels.bind(StockController));
+
+// GET /api/v1/stock/stream                  — live stock updates via SSE
+router.get('/stream', authenticateStream, (req, res) => {
+  const clientId = `${req.user.emp_id}-${Date.now()}`;
+
+  res.status(200).set({
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    Connection: 'keep-alive',
+    'X-Accel-Buffering': 'no',
+  });
+
+  if (res.flushHeaders) res.flushHeaders();
+  res.write(`event: ready\ndata: ${JSON.stringify({ clientId, user: req.user.emp_id })}\n\n`);
+
+  registerStockStreamClient(clientId, res);
+
+  req.on('close', () => {
+    unregisterStockStreamClient(clientId);
+  });
+});
 
 // GET /api/v1/stock/alerts/low-stock        — items below reorder level
 router.get('/alerts/low-stock', authenticate, StockController.getLowStock.bind(StockController));
@@ -32,6 +54,9 @@ router.post('/adjust',
     body('warehouse_id').isInt({ min: 1 }).withMessage('Valid warehouse_id required'),
     body('txn_type').isIn(Object.values(TXN_TYPE)).withMessage('Invalid transaction type'),
     body('quantity').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
+    body('bin_location').optional().isString(),
+    body('batch_no').optional().isString(),
+    body('serial_no').optional().isString(),
     body('notes').optional().isString(),
   ],
   validate,
@@ -53,8 +78,6 @@ router.post('/transfer',
   StockController.transfer.bind(StockController)
 );
 
-module.exports = router;
-
 // POST /api/v1/stock/trigger-reorder  — admin manually triggers the reorder check
 router.post('/trigger-reorder',
   authenticate,
@@ -68,3 +91,5 @@ router.post('/trigger-reorder',
     } catch (err) { next(err); }
   }
 );
+
+module.exports = router;

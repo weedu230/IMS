@@ -91,10 +91,21 @@ class StockRepository extends BaseRepository {
   }
 
   /** Call MySQL stored procedure for ACID stock movement */
-  async callStockMovement({ product_id, warehouse_id, txn_type, quantity, ref_id, notes, created_by }) {
+  async callStockMovement({ product_id, warehouse_id, txn_type, quantity, ref_id, notes, created_by, bin_location, batch_no, serial_no }) {
     await sequelize.query(
-      'CALL RecordStockMovement(?, ?, ?, ?, ?, ?, ?)',
-      { replacements: [product_id, warehouse_id, txn_type, quantity, ref_id || null, notes || null, created_by || null] }
+      'CALL RecordStockMovement(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      { replacements: [
+        product_id,
+        warehouse_id,
+        txn_type,
+        quantity,
+        ref_id || null,
+        notes || null,
+        created_by || null,
+        bin_location || null,
+        batch_no || null,
+        serial_no || null,
+      ] }
     );
   }
 }

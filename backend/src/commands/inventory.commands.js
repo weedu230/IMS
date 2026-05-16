@@ -25,7 +25,7 @@ class BaseInventoryCommand {
 }
 
 class AdjustStockCommand extends BaseInventoryCommand {
-  async execute({ product_id, warehouse_id, txn_type, quantity, notes }, empId) {
+  async execute({ product_id, warehouse_id, txn_type, quantity, notes, bin_location, batch_no, serial_no }, empId) {
     const { productRepo, warehouseRepo, stockRepo, AppError, TXN_TYPE } = this.deps;
 
     const product = await productRepo.findById(product_id);
@@ -44,6 +44,7 @@ class AdjustStockCommand extends BaseInventoryCommand {
     await stockRepo.callStockMovement({
       product_id, warehouse_id, txn_type, quantity,
       ref_id: null, notes, created_by: empId,
+      bin_location, batch_no, serial_no,
     });
 
     const updated = await stockRepo.findByProduct(product_id);

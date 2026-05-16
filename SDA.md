@@ -146,7 +146,14 @@ These are the most important gaps if the goal is a more enterprise-grade invento
 9. External integration adapters for scanners, accounting, or supplier systems
 10. Formal architecture decision records and quality-attribute docs
 
-## 6. Implementation Roadmap
+## 6. Enterprise Inventory Features Added
+
+1. Bin/location-level stock tracking via `stock.bin_location`.
+2. Transaction traceability via `stock_transaction.batch_no` and `stock_transaction.serial_no`.
+3. Stored-procedure backed upsert logic that preserves bin-aware stock rows.
+4. UI support in stock views for bin and trace information.
+
+## 7. Implementation Roadmap
 
 1. Complete facade layer for cross-module workflows.
 2. Add command objects for purchase-order lifecycle actions.
@@ -155,7 +162,7 @@ These are the most important gaps if the goal is a more enterprise-grade invento
 5. Add real-time stock updates and notification delivery.
 6. Document architecture decisions and quality scenarios.
 
-## 7. Quality Attributes Currently Visible
+## 8. Quality Attributes Currently Visible
 
 - Security: JWT auth, RBAC, helmet, CORS, rate limit
 - Modifiability: layered boundaries, repository abstraction
@@ -163,7 +170,7 @@ These are the most important gaps if the goal is a more enterprise-grade invento
 - Reliability: validation and DB transaction usage in critical flows
 - Observability: logging + audit trail
 
-## 8. Recommended Next Improvements (for stronger SDA coverage)
+## 9. Recommended Next Improvements (for stronger SDA coverage)
 
 1. Add explicit Strategy pattern for pricing/reorder/fulfillment policies.
 2. Add explicit Command pattern with command objects and command history.
@@ -172,5 +179,5 @@ These are the most important gaps if the goal is a more enterprise-grade invento
 5. Add one architecture evaluation checklist (ATAM-lite) in docs.
 6. Add auto refresh trigger from DB migration hooks for UML view.
 
-## 9. Conclusion
+## 10. Conclusion
 Project architecture ka foundation strong hai (layered + repository + service orchestration). Course-aligned documentation and dynamic UML reverse engineering ab included hai, lekin pure GoF pattern coverage ke liye explicit abstractions abhi aur add kiye ja sakte hain.

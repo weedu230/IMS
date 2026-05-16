@@ -56,8 +56,8 @@ class StockService {
    * Manual stock adjustment — calls the ACID stored procedure.
    * Supports IN | OUT | ADJUSTMENT | RETURN | WRITE_OFF
    */
-  async adjust({ product_id, warehouse_id, txn_type, quantity, notes }, empId) {
-    return this.adjustCommand.execute({ product_id, warehouse_id, txn_type, quantity, notes }, empId);
+  async adjust({ product_id, warehouse_id, txn_type, quantity, notes, bin_location, batch_no, serial_no }, empId) {
+    return this.adjustCommand.execute({ product_id, warehouse_id, txn_type, quantity, notes, bin_location, batch_no, serial_no }, empId);
   }
 
   /**

@@ -143,11 +143,12 @@ CREATE TABLE stock (
     stock_id      INT       NOT NULL AUTO_INCREMENT,
     product_id    INT       NOT NULL,
     warehouse_id  INT       NOT NULL,
+    bin_location  VARCHAR(100) NOT NULL DEFAULT 'MAIN' COMMENT 'Shelf/bin code inside the warehouse',
     qty_on_hand   INT       NOT NULL DEFAULT 0,
     last_updated  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (stock_id),
-    UNIQUE  KEY uq_stock_location (product_id, warehouse_id),
+    UNIQUE  KEY uq_stock_location (product_id, warehouse_id, bin_location),
     FOREIGN KEY (product_id)   REFERENCES product(product_id)     ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (warehouse_id) REFERENCES warehouse(warehouse_id) ON DELETE CASCADE ON UPDATE CASCADE,
 
@@ -161,6 +162,7 @@ CREATE TABLE stock_transaction (
     txn_id       INT       NOT NULL AUTO_INCREMENT,
     product_id   INT       NOT NULL,
     warehouse_id INT       NOT NULL,
+    bin_location VARCHAR(100) NOT NULL DEFAULT 'MAIN',
     txn_type     ENUM('IN','OUT','TRANSFER_IN','TRANSFER_OUT','ADJUSTMENT','RETURN','WRITE_OFF')
                  NOT NULL,
     quantity     INT       NOT NULL,
@@ -168,6 +170,8 @@ CREATE TABLE stock_transaction (
     ref_id       INT       DEFAULT NULL COMMENT 'FK to PO or Customer Order depending on txn_type',
     notes        TEXT,
     created_by   INT       DEFAULT NULL COMMENT 'emp_id of actor',
+    batch_no     VARCHAR(100) DEFAULT NULL COMMENT 'Optional batch/lot identifier',
+    serial_no    VARCHAR(100) DEFAULT NULL COMMENT 'Optional serial identifier',
 
     PRIMARY KEY (txn_id),
     FOREIGN KEY (product_id)   REFERENCES product(product_id)     ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -325,11 +329,15 @@ CREATE PROCEDURE RecordStockMovement(
     IN p_quantity     INT,
     IN p_ref_id       INT,
     IN p_notes        TEXT,
-    IN p_created_by   INT
+    IN p_created_by   INT,
+    IN p_bin_location VARCHAR(100),
+    IN p_batch_no     VARCHAR(100),
+    IN p_serial_no    VARCHAR(100)
 )
 BEGIN
     DECLARE v_current_qty INT DEFAULT 0;
     DECLARE v_new_qty     INT DEFAULT 0;
+    DECLARE v_bin_location VARCHAR(100) DEFAULT 'MAIN';
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
@@ -338,10 +346,12 @@ BEGIN
 
     START TRANSACTION;
 
+    SET v_bin_location = COALESCE(NULLIF(p_bin_location, ''), 'MAIN');
+
     -- Get current qty (or 0 if no row)
     SELECT COALESCE(qty_on_hand, 0) INTO v_current_qty
     FROM stock
-    WHERE product_id = p_product_id AND warehouse_id = p_warehouse_id;
+    WHERE product_id = p_product_id AND warehouse_id = p_warehouse_id AND bin_location = v_bin_location;
 
     -- Calculate new quantity
     SET v_new_qty = CASE
@@ -359,13 +369,13 @@ BEGIN
 
     -- Record the transaction first
     INSERT INTO stock_transaction
-        (product_id, warehouse_id, txn_type, quantity, ref_id, notes, created_by)
+        (product_id, warehouse_id, bin_location, txn_type, quantity, ref_id, notes, created_by, batch_no, serial_no)
     VALUES
-        (p_product_id, p_warehouse_id, p_txn_type, p_quantity, p_ref_id, p_notes, p_created_by);
+        (p_product_id, p_warehouse_id, v_bin_location, p_txn_type, p_quantity, p_ref_id, p_notes, p_created_by, p_batch_no, p_serial_no);
 
     -- Upsert stock: INSERT if not exists, UPDATE if exists
-    INSERT INTO stock (product_id, warehouse_id, qty_on_hand, last_updated)
-    VALUES (p_product_id, p_warehouse_id, v_new_qty, CURRENT_TIMESTAMP)
+    INSERT INTO stock (product_id, warehouse_id, bin_location, qty_on_hand, last_updated)
+    VALUES (p_product_id, p_warehouse_id, v_bin_location, v_new_qty, CURRENT_TIMESTAMP)
     ON DUPLICATE KEY UPDATE
         qty_on_hand = v_new_qty,
         last_updated = CURRENT_TIMESTAMP;
