@@ -4,6 +4,16 @@ IMS Pro is a fullâ€‘stack inventory management application that supports multiâ€
 
 [DBMS-Project-Report-Template-06052026-120106pm.docx](https://github.com/user-attachments/files/27491024/DBMS-Project-Report-Template-06052026-120106pm.docx)
 
+## SDA Highlights (Reference: `SDA.md`)
+
+This README is aligned with the architecture notes documented in [`SDA.md`](./SDA.md).
+
+- **Layered architecture:** `Route -> Controller -> Service -> Repository -> Model/DB`
+- **MVC web structure:** backend controllers/models with a separate React SPA frontend
+- **Implemented design patterns:** Repository, Strategy, Command, Observer, Factory-style creation, Builder, and Adapter
+- **Reverse engineering support:** dynamic UML endpoint (`GET /api/v1/architecture/uml?type=all|class|er`) with frontend Mermaid rendering page (`/architecture-uml`)
+- **Visible quality attributes:** security, modifiability, maintainability, reliability, and observability
+
 ## 1. Introduction
 
 - **Project Background:** This Inventory Management System (IMS) is a web application to manage products, warehouses, stock levels, purchase orders and audit logs for a small-to-medium business. The system tracks stock transactions with ACID guarantees (via a stored procedure), supports multi-warehouse inventories, and provides role-based user management.
