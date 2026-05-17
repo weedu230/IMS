@@ -1,106 +1,121 @@
-# IMS Pro — Project Report
+# IMS Pro — Simple Semester Project Report
 
-## Report Metadata
+## 1. Title Page
 - **Project Title:** IMS Pro (Inventory Management System)
-- **Document Type:** Project Report
-- **Version:** Updated
-- **Generated:** May 17, 2026
-
-## 1. Abstract
-IMS Pro is a full-stack inventory management system for small-to-medium businesses. It supports multi-warehouse stock tracking, purchase-order lifecycle management, role-based access control, audit logging, and reporting dashboards. The solution is implemented with Node.js/Express + Sequelize/MySQL on the backend and React on the frontend.
+- **Student Name(s):** _To be filled by student_
+- **Course Name & Code:** _To be filled by student_
+- **Instructor’s Name:** _To be filled by student_
+- **Date:** May 17, 2026
 
 ## 2. Introduction
-### 2.1 Background
-Inventory operations require reliable stock visibility, controlled purchase flow, and traceable updates. IMS Pro addresses these needs with centralized product, warehouse, stock, and transaction management.
+- **Project Background:**
+  IMS Pro is a web-based inventory management system developed to manage products, warehouses, stock levels, purchase orders, and audit logs for small-to-medium businesses. It improves inventory visibility and operational control through a centralized platform.
 
-### 2.2 Objectives
-- Maintain accurate, auditable inventory records.
-- Support PO lifecycle: create → approve → receive.
-- Enable role-based operations (Admin, Manager, Staff, Viewer).
-- Provide reporting and low-stock visibility for decision-making.
+- **Reference Application:**
+  The project is inspired by common ERP inventory modules (such as Odoo/NetSuite-style workflows) and adapted into a lightweight full-stack implementation.
 
-### 2.3 Reference Template
-[Updated-SDA-LAB-MANUAL-SPR-2026-14052026-090546am.docx](https://github.com/user-attachments/files/27898688/Updated-SDA-LAB-MANUAL-SPR-2026-14052026-090546am.docx)
+- **Project Objectives:**
+  - Maintain accurate and auditable stock records.
+  - Support purchase order lifecycle (create → approve → receive).
+  - Implement role-based access for Admin, Manager, Staff, and Viewer.
+  - Provide reports and low-stock insights for decision-making.
 
 ## 3. System Overview
-### 3.1 Key Features
-- Product/category management
-- Multi-warehouse stock tracking
-- Stock transactions (`IN`, `OUT`, `ADJUSTMENT`, `TRANSFER`)
-- Purchase order workflow with partial receiving
-- Audit logging for critical operations
-- Dashboard and low-stock alerts
+- **Key Features:**
+  - Product and category management
+  - Multi-warehouse stock tracking
+  - Stock transactions (`IN`, `OUT`, `ADJUSTMENT`, `TRANSFER`)
+  - Purchase order workflow with partial receiving
+  - Audit logging for critical operations
+  - Reports and dashboard analytics
 
-### 3.2 User Roles
-- **Admin:** Full access and master-data control
-- **Manager:** PO approvals and reports
-- **Staff:** Receiving, stock updates, fulfillment actions
-- **Viewer:** Read-only operational visibility
+- **User Roles:**
+  - **Admin:** Full system access and data management
+  - **Manager:** Approvals, monitoring, and reporting
+  - **Staff:** Receiving, stock updates, and fulfillment actions
+  - **Viewer:** Read-only access to operational data
 
-## 4. Architecture and Design
-### 4.1 Client–Server–Database Flow
-- React client sends HTTP requests to Express REST APIs.
-- Backend validates and executes business logic through service/repository layers.
-- MySQL stores normalized data and enforces consistency.
+## 4. Architectural Style
+- **Selected Style:**
+  Layered Client-Server architecture (React frontend client + Express service layer + MySQL database).
 
-### 4.2 Database Technology
-- **DBMS:** MySQL 8.0 (InnoDB)
-- **Reasoning:** Relational design fits product/warehouse/order entities; transaction support ensures consistency.
+- **Justification:**
+  This style was selected because it separates concerns clearly (UI, business logic, data access), improves maintainability, and supports scalable feature additions.
 
-### 4.3 Core Tables
-- `product`, `category`
-- `warehouse`, `stock`, `stock_transaction`
-- `purchase_order`, `po_item`
-- `employee`, `audit_log`
+- **Diagram:**
+```mermaid
+flowchart LR
+  A[React Client] --> B[Express API]
+  B --> C[Service Layer]
+  C --> D[Repository Layer]
+  D --> E[(MySQL Database)]
+```
 
-### 4.4 ER Diagram
+## 5. Database Design
+- **Database Type:**
+  MySQL 8.0 (InnoDB)
+
+- **Schema Overview:**
+  Main entities/tables:
+  - `product` (product_id, sku, name, reorder_level, reorder_qty)
+  - `warehouse` (warehouse_id, warehouse_name, location)
+  - `stock` (stock_id, product_id, warehouse_id, qty_on_hand)
+  - `stock_transaction` (txn_id, product_id, warehouse_id, txn_type, quantity)
+  - `purchase_order` (po_id, supplier_id, status)
+  - `po_item` (po_item_id, po_id, product_id, qty_ordered, qty_received)
+  - `employee` (emp_id, name, email, role)
+  - `audit_log` (log_id, table_name, action, changed_at)
+
+- **ER Diagram:**
 ```mermaid
 erDiagram
   PRODUCT ||--o{ STOCK : has
   WAREHOUSE ||--o{ STOCK : stores
   PRODUCT ||--o{ PO_ITEM : ordered_in
   PURCHASE_ORDER ||--o{ PO_ITEM : contains
-  WAREHOUSE ||--o{ PO_ITEM : destination
   PRODUCT ||--o{ STOCK_TRANSACTION : transacts
   WAREHOUSE ||--o{ STOCK_TRANSACTION : records
-  EMPLOYEE ||--o{ STOCK_TRANSACTION : creates
-  EMPLOYEE ||--o{ PURCHASE_ORDER : creates
   EMPLOYEE ||--o{ AUDIT_LOG : changes
 ```
 
-### 4.5 Sequence: Receive Purchase Order
-```mermaid
-sequenceDiagram
-  participant C as Client (React)
-  participant S as Server (Express)
-  participant DB as MySQL
+- **Sample Table Structure:**
 
-  C->>S: PUT /purchase-orders/:id/receive { items }
-  S->>DB: START TRANSACTION
-  S->>DB: Record stock movement for each item
-  S->>DB: UPDATE po_item qty_received
-  S->>DB: UPDATE purchase_order status
-  S->>DB: COMMIT
-  S-->>C: 200 OK
-```
+| Column        | Data Type      | Key/Constraint |
+|---------------|----------------|----------------|
+| product_id    | INT            | PK, Auto Increment |
+| sku           | VARCHAR(50)    | UNIQUE, NOT NULL |
+| name          | VARCHAR(200)   | NOT NULL |
+| reorder_level | INT            | DEFAULT 10 |
+| reorder_qty   | INT            | DEFAULT 50 |
+| is_active     | BOOLEAN        | DEFAULT TRUE |
 
-## 5. Implementation Summary
-### 5.1 Technology Stack
-- **Backend:** Node.js, Express, Sequelize, MySQL
-- **Frontend:** React, react-router
-- **Security/Auth:** JWT, bcrypt
-- **Logging:** Winston
-- **Testing:** Jest
+## 6. Design Pattern
+- **Pattern Used:**
+  Repository Pattern
 
-### 5.2 Implemented Functionalities
-- Product CRUD and validation
-- Stock aggregation and low-stock detection
-- Purchase order lifecycle with partial receives
-- Audit logging for create/update/delete
-- Report and analytics endpoints
+- **Purpose:**
+  To separate business logic from database access logic, making the code more modular, testable, and maintainable.
 
-## 6. Screenshots / Evidence
-> All previously provided README images are retained below.
+- **Implementation:**
+  The backend service layer delegates data operations to repository classes. Shared CRUD behavior is centralized and domain-specific repositories extend this behavior for custom queries.
+
+## 7. Implementation
+- **Tools & Technologies:**
+  - Backend: Node.js, Express, Sequelize, MySQL
+  - Frontend: React, react-router
+  - Authentication/Security: JWT, bcrypt
+  - Logging: Winston
+  - Testing: Jest
+
+- **Functionalities Developed:**
+  - Product CRUD and validation
+  - Stock aggregation and low-stock detection
+  - Purchase order lifecycle with partial receives
+  - Audit logging for create/update/delete operations
+  - Reporting and analytics endpoints
+
+- **Screenshots:**
+  (All images previously present in README are retained below.)
 
 ![System Screenshot 1](https://github.com/user-attachments/assets/9c82b46e-a6b1-4445-9aea-4e702b562c51)
 
@@ -111,24 +126,34 @@ sequenceDiagram
 <img width="1366" height="768" alt="Screenshot 2026-05-07 220942" src="https://github.com/user-attachments/assets/59988a47-7db2-442d-bd03-147ae51a3326" />
 <img width="326" height="316" alt="a" src="https://github.com/user-attachments/assets/3ceaaa84-7e46-45aa-9167-d15481e07fd7" />
 
-## 7. Testing and Validation
-### 7.1 Approach
-- UI workflow checks (PO create → approve → receive)
-- Backend service-level tests with Jest
-- DB-level validation of transaction and stock consistency
+## 8. Testing
+- **Testing Approach:**
+  - Manual testing of key UI workflows
+  - Automated backend service tests with Jest
 
-### 7.2 Representative Cases
-- Full receive updates stock correctly
-- Partial receive updates PO state correctly
-- Validation prevents invalid operations
-- Audit logs capture critical changes
+- **Test Cases:**
+  - Full receive updates stock correctly
+  - Partial receive updates PO status correctly
+  - Validation blocks invalid inputs/operations
+  - Audit logs are generated for critical actions
 
-## 8. Conclusion
-IMS Pro delivers a practical inventory solution with traceability, multi-warehouse support, and role-aware operations. The architecture is modular and extendable for future additions like notifications, automated reconciliation, and advanced forecasting.
+- **Results:**
+  Core modules were validated for expected behavior; identified issues during development were fixed through iterative testing and re-verification.
 
-## 9. References
-- Project source: `/backend` and `/frontend`
-- Common ERP/IMS workflow concepts
+## 9. Conclusion
+- **Summary:**
+  IMS Pro achieves a role-based, auditable inventory workflow with multi-warehouse tracking and PO lifecycle support.
 
----
-Generated: May 17, 2026
+- **Challenges:**
+  - Ensuring stock consistency during transactional updates
+  - Coordinating PO state transitions with stock updates
+
+- **Future Work:**
+  - Notification/email alerts for low stock
+  - Advanced analytics and exportable reports
+  - Automated reconciliation and forecasting support
+
+## 10. References
+- ERP/IMS workflow references (Odoo/NetSuite-style inventory concepts)
+- Project source code: `/backend` and `/frontend`
+- Template context provided by issue discussion
