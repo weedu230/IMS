@@ -23,7 +23,7 @@ export default function WarehousesPage() {
     try { const r = await warehouseAPI.getAll({ page, limit }); setItems(r.data.data); }
     catch (e) { toast.error(getErrorMessage(e)); }
     finally { setLoading(false); }
-  }, [page]);
+  }, [page, limit]);
 
   useEffect(() => { load(); }, [load]);
 
