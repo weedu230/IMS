@@ -106,20 +106,25 @@ erDiagram
 
 | # | Pattern | Category | Purpose | Implementation Status |
 |---|---------|----------|---------|------------------------|
-| 1 | Repository | Structural | Data access abstraction | ✅ Repository classes in backend |
+| 1 | Repository | Architectural | Data access abstraction | ✅ Repository classes in backend |
 | 2 | Strategy | Behavioral | Pluggable algorithms | ✅ Stock valuation strategy layer |
 | 3 | Command | Behavioral | Encapsulate actions | ✅ Inventory command objects |
 | 4 | Observer | Behavioral | Event-driven notifications | ✅ Domain event bus/listeners |
 | 5 | Factory | Creational | Create channel-specific notifiers | ✅ Notification factory |
-| 6 | Facade | Structural | Unified cross-module interface | ⚠️ Partial/Service-level orchestration |
+| 6 | Facade | Structural | Unified cross-module interface | 🟡 Partial: inventory/report aggregation exists; unified PO+stock+notification facade is pending |
 | 7 | Builder | Creational | Fluent object construction | ✅ Report query builder |
 | 8 | Adapter | Structural | Normalize incompatible inputs | ✅ Product import adapter |
-| 9 | Real-Time/SSE | Architectural | Live data updates | ✅ EventSource-based stock updates |
-| 10 | Dynamic UML | Architectural | Auto-generate architecture diagrams | ✅ Mermaid-based reverse UML |
-| 11 | Enterprise Inventory Features | Domain | Practical IMS capabilities | ✅ Bin/batch/serial tracking |
 
 **Summary:**  
-The IMS implementation uses multiple structural, behavioral, and creational patterns to keep business logic modular, improve maintainability, and support enterprise-style inventory workflows.
+The IMS implementation uses structural, behavioral, and creational patterns to keep business logic modular and maintainable.
+
+### Architecture & Domain Highlights
+
+| # | Feature | Category | Purpose | Implementation Status |
+|---|---------|----------|---------|------------------------|
+| 1 | Real-Time/SSE | Architectural | Live data updates | ✅ EventSource-based stock updates |
+| 2 | Dynamic UML | Architectural | Auto-generate architecture diagrams | ✅ Mermaid-based reverse UML |
+| 3 | Bin/Batch/Serial Tracking | Domain | Enterprise-grade inventory traceability | ✅ Implemented in stock and stock-transaction workflows |
 
 ## 7. Implementation
 - **Tools & Technologies:**
