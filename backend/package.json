@@ -8,6 +8,7 @@
     "dev": "nodemon src/server.js",
     "test": "jest --coverage",
     "db:migrate": "node src/config/migrate.js",
+    "db:migrate:pg": "node src/config/migrate-postgres.js",
     "db:seed": "node src/config/seed.js"
   },
   "dependencies": {
