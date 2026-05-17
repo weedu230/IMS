@@ -102,15 +102,24 @@ erDiagram
 | reorder_qty   | INT            | DEFAULT 50 |
 | is_active     | BOOLEAN        | DEFAULT TRUE |
 
-## 6. Design Pattern
-- **Pattern Used:**
-  Repository Pattern
+## 6. Design Patterns
 
-- **Purpose:**
-  To separate business logic from database access logic, making the code more modular, testable, and maintainable.
+| # | Pattern | Category | Purpose | Implementation Status |
+|---|---------|----------|---------|------------------------|
+| 1 | Repository | Structural | Data access abstraction | ✅ Repository classes in backend |
+| 2 | Strategy | Behavioral | Pluggable algorithms | ✅ Stock valuation strategy layer |
+| 3 | Command | Behavioral | Encapsulate actions | ✅ Inventory command objects |
+| 4 | Observer | Behavioral | Event-driven notifications | ✅ Domain event bus/listeners |
+| 5 | Factory | Creational | Create channel-specific notifiers | ✅ Notification factory |
+| 6 | Facade | Structural | Unified cross-module interface | ⚠️ Partial/Service-level orchestration |
+| 7 | Builder | Creational | Fluent object construction | ✅ Report query builder |
+| 8 | Adapter | Structural | Normalize incompatible inputs | ✅ Product import adapter |
+| 9 | Real-Time/SSE | Architectural | Live data updates | ✅ EventSource-based stock updates |
+| 10 | Dynamic UML | Architectural | Auto-generate architecture diagrams | ✅ Mermaid-based reverse UML |
+| 11 | Enterprise Inventory Features | Domain | Practical IMS capabilities | ✅ Bin/batch/serial tracking |
 
-- **Implementation:**
-  The backend service layer delegates data operations to repository classes. Shared CRUD behavior is centralized and domain-specific repositories extend this behavior for custom queries.
+**Summary:**  
+The IMS implementation uses multiple structural, behavioral, and creational patterns to keep business logic modular, improve maintainability, and support enterprise-style inventory workflows.
 
 ## 7. Implementation
 - **Tools & Technologies:**
