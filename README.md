@@ -83,8 +83,11 @@ erDiagram
   WAREHOUSE ||--o{ STOCK : stores
   PRODUCT ||--o{ PO_ITEM : ordered_in
   PURCHASE_ORDER ||--o{ PO_ITEM : contains
+  WAREHOUSE ||--o{ PO_ITEM : destination
   PRODUCT ||--o{ STOCK_TRANSACTION : transacts
   WAREHOUSE ||--o{ STOCK_TRANSACTION : records
+  EMPLOYEE ||--o{ STOCK_TRANSACTION : creates
+  EMPLOYEE ||--o{ PURCHASE_ORDER : creates
   EMPLOYEE ||--o{ AUDIT_LOG : changes
 ```
 
