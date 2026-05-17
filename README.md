@@ -137,7 +137,7 @@ erDiagram
 <img width="1366" height="768" alt="Purchase order workflow screen showing order lifecycle information" src="https://github.com/user-attachments/assets/d36c81d7-7367-47f1-a468-2a01d55d4fa3" />
 <img width="1366" height="768" alt="Reporting and tabular data screen for operational monitoring" src="https://github.com/user-attachments/assets/967aac0b-806f-41e8-9cee-a04d7723a5aa" />
 <img width="1366" height="768" alt="Dashboard-style screen highlighting current inventory status and metrics" src="https://github.com/user-attachments/assets/59988a47-7db2-442d-bd03-147ae51a3326" />
-<img width="326" height="316" alt="Small icon-style image containing the letter 'a' used in the project evidence section" src="https://github.com/user-attachments/assets/3ceaaa84-7e46-45aa-9167-d15481e07fd7" />
+<img width="326" height="316" alt="Supplementary project evidence graphic included with implementation screenshots" src="https://github.com/user-attachments/assets/3ceaaa84-7e46-45aa-9167-d15481e07fd7" />
 
 ## 8. Testing
 - **Testing Approach:**
