@@ -45,10 +45,20 @@
 - **Diagram:**
 ```mermaid
 flowchart LR
-  A[React Client] --> B[Express API]
-  B --> C[Service Layer]
-  C --> D[Repository Layer]
-  D --> E[(MySQL Database)]
+  A[React Client]
+  B[Express API]
+  C[Service Layer]
+  D[Repository Layer]
+  E[(MySQL Database)]
+
+  A --> B
+  B --> C
+  C --> D
+  D --> E
+  E --> D
+  D --> C
+  C --> B
+  B --> A
 ```
 
 ## 5. Database Design
@@ -117,14 +127,14 @@ erDiagram
 - **Screenshots:**
   (All images previously present in README are retained below.)
 
-![System Screenshot 1](https://github.com/user-attachments/assets/9c82b46e-a6b1-4445-9aea-4e702b562c51)
+![Dashboard view with key IMS overview panels](https://github.com/user-attachments/assets/9c82b46e-a6b1-4445-9aea-4e702b562c51)
 
-<img width="1366" height="768" alt="Screenshot 2026-05-07 221140" src="https://github.com/user-attachments/assets/fe23badd-b117-4bef-b968-bdd4ac96a4a1" />
-<img width="1366" height="768" alt="Screenshot 2026-05-07 221123" src="https://github.com/user-attachments/assets/c349aa9b-14bd-4a43-8a27-6c7ba7ec93b7" />
-<img width="1366" height="768" alt="Screenshot 2026-05-07 221101" src="https://github.com/user-attachments/assets/d36c81d7-7367-47f1-a468-2a01d55d4fa3" />
-<img width="1366" height="768" alt="Screenshot 2026-05-07 221002" src="https://github.com/user-attachments/assets/967aac0b-806f-41e8-9cee-a04d7723a5aa" />
-<img width="1366" height="768" alt="Screenshot 2026-05-07 220942" src="https://github.com/user-attachments/assets/59988a47-7db2-442d-bd03-147ae51a3326" />
-<img width="326" height="316" alt="a" src="https://github.com/user-attachments/assets/3ceaaa84-7e46-45aa-9167-d15481e07fd7" />
+<img width="1366" height="768" alt="Application screen showing an IMS module workflow" src="https://github.com/user-attachments/assets/fe23badd-b117-4bef-b968-bdd4ac96a4a1" />
+<img width="1366" height="768" alt="Application screen showing another inventory operation page" src="https://github.com/user-attachments/assets/c349aa9b-14bd-4a43-8a27-6c7ba7ec93b7" />
+<img width="1366" height="768" alt="Application screen showing inventory and transaction-related information" src="https://github.com/user-attachments/assets/d36c81d7-7367-47f1-a468-2a01d55d4fa3" />
+<img width="1366" height="768" alt="Application screen showing data table and management controls" src="https://github.com/user-attachments/assets/967aac0b-806f-41e8-9cee-a04d7723a5aa" />
+<img width="1366" height="768" alt="Application screen highlighting stock and operations status" src="https://github.com/user-attachments/assets/59988a47-7db2-442d-bd03-147ae51a3326" />
+<img width="326" height="316" alt="Small diagram illustrating project architecture concept" src="https://github.com/user-attachments/assets/3ceaaa84-7e46-45aa-9167-d15481e07fd7" />
 
 ## 8. Testing
 - **Testing Approach:**
