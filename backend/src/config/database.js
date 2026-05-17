@@ -17,7 +17,7 @@ const getSequelize = () => {
     {
       host:    process.env.DB_HOST,
       port:    parseInt(process.env.DB_PORT, 10),
-      dialect: 'mysql',
+      dialect: 'postgres',
       logging: process.env.NODE_ENV === 'development'
         ? (msg) => require('../utils/logger').debug(msg)
         : false,
