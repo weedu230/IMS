@@ -38,7 +38,60 @@
 ## 4. Architectural Style
 - **Selected Style:**
   Layered Client-Server architecture (React frontend client + Express service layer + MySQL database).
+- **Role of the client application:**
+  - React SPA sends HTTP requests (GET/POST/PUT) to backend REST API endpoints.
+  - Client handles presentation, user actions (create PO, receive goods, adjust stock) and presents feedback (toasts, modals).
 
+- **Role of the database server:**
+  - MySQL stores normalized tables (product, stock, stock_transaction, purchase_order, po_item, audit_log, employee, warehouse).
+  - Critical stock updates use a stored procedure `RecordStockMovement` to ensure ACID semantics (transactions + upsert behavior) and prevent negative stock.
+
+- **Data flow direction:**
+  - Client → Backend API → Database (execute queries / stored procedures) → Backend returns result → Client displays updates.
+
+- **Basic interaction examples:**
+  - **Insert (create product):**
+    - Client: `POST /api/v1/products { name, sku, reorder_level }`
+    - Server: validate → `Product.create(...)` → `audit_log` INSERT
+    - Client: show success
+  - **Update (receive goods for PO):**
+    - Client: `PUT /api/v1/purchase-orders/:id/receive { items }`
+    - Server: `purchaseOrderService.receiveGoods(id, items)` → calls stored procedure per item:
+      - `CALL RecordStockMovement(product_id, warehouse_id, 'IN', qty, ref_id=PO)`
+      - Insert `stock_transaction` and upsert `stock` row
+      - Update PO item `qty_received` and PO status
+    - Client: show success and refresh stock/PO
+  - **Fetch (low stock list):**
+    - Client: `GET /api/v1/stock/alerts/low-stock`
+    - Server: `stockRepo.findLowStock()` raw query returns aggregated view
+    - Client: display Low-Stock tab
+
+## Design Patterns
+
+This project implements a set of well-known design patterns to keep the code modular, testable and extensible. A detailed, example-rich document is available at `DESIGN_PATTERNS_DETAILED.md` in the repository root (recommended for review during presentations).
+
+Summary of patterns implemented:
+
+| Pattern | Purpose | Where to look |
+|--------:|---------|---------------|
+| Repository | Centralized data access, pagination, audit | `backend/src/repositories/base.repository.js` + domain repos |
+| Strategy | Pluggable stock valuation algorithms | `backend/src/services/stockValuation.strategy.js` |
+| Command | Encapsulate inventory actions (adjust, transfer) | `backend/src/commands/inventory.commands.js` |
+| Observer | Domain event bus and listeners (notifications, SSE) | `backend/src/utils/domainEvents.js`, `registerDomainEventListeners.js` |
+| Factory | Notification channels + middleware factory for RBAC | `backend/src/services/notification/notification.factory.js`, `backend/src/middleware/auth.js` |
+| Facade | Unified inventory overview endpoint | `backend/src/services/inventory.facade.js` |
+| Builder | Fluent SQL/query builder for reports | `backend/src/utils/reportQuery.builder.js` |
+| Adapter | Normalize external product import data | `backend/src/utils/productImport.adapter.js` |
+| Real-Time / SSE | Server-Sent Events for live stock updates | `backend/src/utils/stockStreamHub.js`, `frontend/src/pages/stock/StockPage.js` |
+| Dynamic UML | Auto-generate Mermaid diagrams from models/schema | `backend/src/services/architecture.service.js`, `frontend/src/pages/admin/ArchitectureUMLPage.js` |
+| Enterprise Inventory | Bin/batch/serial tracking, schema extensions | `backend/src/config/schema.sql`, `backend/src/models/Stock.js` |
+
+For full implementation details, code samples, usage examples and where to open files during demonstrations, see `DESIGN_PATTERNS_DETAILED.md` in the repository root.
+
+## 4. Database Design
+
+- **Database Type:** MySQL 8.0 (InnoDB)
+>>>>>>> bd30bc5 (docs: add Design Patterns section to README)
 - **Justification:**
   This style was selected because it separates concerns clearly (UI, business logic, data access), improves maintainability, and supports scalable feature additions.
 
