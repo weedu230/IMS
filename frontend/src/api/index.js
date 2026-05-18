@@ -136,9 +136,11 @@ export const architectureAPI = {
 
 // ── Employees ─────────────────────────────────────────────────────────────────
 export const employeeAPI = {
-  getAll:     (params) => api.get('/employees', { params }),
-  getById:    (id)     => api.get(`/employees/${id}`),
-  update:     (id, data) => api.put(`/employees/${id}`, data),
-  deactivate: (id)     => api.delete(`/employees/${id}`),  resetPassword: (id, newPassword) => api.post(`/employees/${id}/reset-password`, { new_password: newPassword }),};
+  getAll:       (params) => api.get('/employees', { params }),
+  getById:      (id) => api.get(`/employees/${id}`),
+  update:       (id, data) => api.put(`/employees/${id}`, data),
+  deactivate:   (id) => api.delete(`/employees/${id}`),
+  resetPassword: (id, newPassword) => api.post(`/employees/${id}/reset-password`, { new_password: newPassword }),
+};
 
 export default api;
