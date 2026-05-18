@@ -21,7 +21,7 @@ export default function CategoriesPage() {
     try { const r = await categoryAPI.getAll({ page, limit }); setItems(r.data.data); }
     catch (e) { toast.error(getErrorMessage(e)); }
     finally { setLoading(false); }
-  }, [page]);
+  }, [page, limit]);
 
   useEffect(() => { load(); }, [load]);
 

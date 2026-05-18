@@ -8,8 +8,7 @@ import {
   ShoppingCart, Package, Truck,
 } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell, Legend,
+  Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
 } from 'recharts';
 
 const TXN_COLORS = {

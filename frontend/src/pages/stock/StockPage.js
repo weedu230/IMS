@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { stockAPI, productAPI, warehouseAPI } from '../../api';
 import {
   Card, Table, Button, Badge, Modal, Input, Select,
-  SearchBar, Pagination, Alert, StatCard, Spinner,
+  Pagination, Alert,
 } from '../../components/ui';
 import { formatDateTime, statusColor, getErrorMessage } from '../../utils/helpers';
-import { usePagination, useDebounce } from '../../hooks/useApi';
-import { AlertTriangle, ArrowLeftRight, SlidersHorizontal, RefreshCw } from 'lucide-react';
+import { usePagination } from '../../hooks/useApi';
+import { ArrowLeftRight, SlidersHorizontal, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const TABS = ['Levels', 'Transactions', 'Low Stock'];
@@ -33,15 +33,30 @@ export default function StockPage() {
   const [xfrErr,   setXfrErr]   = useState('');
 
   const { page, limit, setPage, reset } = usePagination(20);
-  const [search, setSearch] = useState('');
-  const q = useDebounce(search, 400);
 
   useEffect(() => {
     productAPI.getAll({ limit: 200 }).then(r => setProducts(r.data.data?.data || []));
     warehouseAPI.getAll({ limit: 50 }).then(r => setWarehouses(r.data.data?.data || []));
   }, []);
 
-  useEffect(() => { loadTab(); }, [tab, page, q]);
+  const loadTab = useCallback(async () => {
+    setLoading(true);
+    try {
+      if (tab === 'Levels') {
+        const r = await stockAPI.getAll({ page, limit });
+        setLevels(r.data.data);
+      } else if (tab === 'Transactions') {
+        const r = await stockAPI.getTransactions({ page, limit });
+        setTransactions(r.data.data);
+      } else {
+        const r = await stockAPI.getLowStock();
+        setLowStock(r.data.data || []);
+      }
+    } catch (e) { toast.error(getErrorMessage(e)); }
+    finally { setLoading(false); }
+  }, [tab, page, limit]);
+
+  React.useEffect(() => { loadTab(); }, [loadTab]);
 
   useEffect(() => {
     const token = localStorage.getItem('ims_token');
@@ -62,24 +77,9 @@ export default function StockPage() {
     return () => {
       stream.close();
     };
-  }, [tab, page, q]);
+  }, [loadTab]);
 
-  const loadTab = async () => {
-    setLoading(true);
-    try {
-      if (tab === 'Levels') {
-        const r = await stockAPI.getAll({ page, limit });
-        setLevels(r.data.data);
-      } else if (tab === 'Transactions') {
-        const r = await stockAPI.getTransactions({ page, limit });
-        setTransactions(r.data.data);
-      } else {
-        const r = await stockAPI.getLowStock();
-        setLowStock(r.data.data || []);
-      }
-    } catch (e) { toast.error(getErrorMessage(e)); }
-    finally { setLoading(false); }
-  };
+  
 
   const handleAdjust = async () => {
     setSaving(true); setAdjErr('');

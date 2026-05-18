@@ -30,7 +30,7 @@ export default function EmployeesPage() {
     try { const r = await employeeAPI.getAll({ page, limit, search: q }); setItems(r.data.data); }
     catch (e) { toast.error(getErrorMessage(e)); }
     finally { setLoading(false); }
-  }, [page, q]);
+  }, [page, limit, q]);
 
   useEffect(() => { load(); }, [load]);
 

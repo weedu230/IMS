@@ -25,7 +25,7 @@ export default function SuppliersPage() {
     try { const r = await supplierAPI.getAll({ page, limit, search: q }); setItems(r.data.data); }
     catch (e) { toast.error(getErrorMessage(e)); }
     finally { setLoading(false); }
-  }, [page, q]);
+  }, [page, limit, q]);
 
   useEffect(() => { load(); }, [load]);
 

@@ -32,7 +32,7 @@ export default function OrdersPage() {
       setOrders(r.data.data);
     } catch (e) { toast.error(getErrorMessage(e)); }
     finally { setLoading(false); }
-  }, [page, q]);
+  }, [page, limit, q]);
 
   useEffect(() => { load(); }, [load]);
 

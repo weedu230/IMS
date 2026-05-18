@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { productAPI, categoryAPI } from '../../api';
 import {
-  Card, CardHeader, Table, Button, Badge, Modal,
+  Card, Table, Button, Badge, Modal,
   Input, Select, SearchBar, Pagination, Alert, Spinner,
 } from '../../components/ui';
-import { formatCurrency, statusColor, getErrorMessage } from '../../utils/helpers';
+import { formatCurrency, getErrorMessage } from '../../utils/helpers';
 import { useDebounce, usePagination } from '../../hooks/useApi';
 import { Plus, Edit2, PowerOff } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -26,16 +26,16 @@ export default function ProductsPage() {
   const { page, limit, setPage } = usePagination(20);
   const q = useDebounce(search, 400);
 
-  const load = async () => {
+  const load = React.useCallback(async () => {
     setLoading(true);
     try {
       const res = await productAPI.getAll({ page, limit, search: q });
       setProducts(res.data.data);
     } catch (e) { setError(getErrorMessage(e)); }
     finally { setLoading(false); }
-  };
+  }, [page, limit, q]);
 
-  useEffect(() => { load(); }, [page, q]);
+  React.useEffect(() => { load(); }, [load]);
 
   useEffect(() => {
     categoryAPI.getAll({ limit: 100 }).then(r => setCategories(r.data.data?.data || []));
