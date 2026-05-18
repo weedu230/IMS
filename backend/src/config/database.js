@@ -59,7 +59,7 @@ const sequelize = getSequelize();
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    require('../utils/logger').info('✅  MySQL connected successfully');
+    require('../utils/logger').info('✅  PostgreSQL connected successfully');
   } catch (error) {
     require('../utils/logger').error('❌ Database connection failed:', error.message);
     throw error;
